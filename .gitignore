@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+server/data/*.json
+scripts/*.txt
+scripts/test_smtp*.py
+.claude/settings.local.json
