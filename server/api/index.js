@@ -31,7 +31,7 @@ router.post("/tour", (req, res) => {
     res.status(201).json({
       ok: true,
       id: entry.id,
-      message: "Tour request received. We will confirm your Saturday appointment by email.",
+      message: "Tour request received. We will confirm your tour appointment by email.",
     });
   } catch (err) {
     res.status(400).json({ ok: false, message: err.message || "Invalid tour submission." });

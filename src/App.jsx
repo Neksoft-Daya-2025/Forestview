@@ -32,7 +32,7 @@ import footerLogo from "./assets/forestviewfooterlogo.png";
 import heroPhoto from "./assets/hero-leafbuckle.jpg";
 import classroomPhoto from "./assets/grid-whole.jpg";
 import familyPhoto from "./assets/grid-community.jpg";
-import signPhoto from "./assets/grid-sign.jpg";
+import signPhoto from "./assets/11673.jpg";
 import experienceChild from "./assets/division-ycc.jpg";
 import experienceVideo from "./assets/video.mp4";
 import {
@@ -83,6 +83,10 @@ const HERO_SUBHEADLINE =
   "Nurturing confident, independent learners through toddler and preschool programs.";
 const SCHEDULE_TOUR_HREF = "#/tour";
 const ADMISSION_FORM_HREF = "#/admission-form";
+const TOUR_WEEKDAYS = [2, 3, 4];
+const TOUR_DAYS_LABEL = "Tuesday, Wednesday & Thursday";
+const TOUR_HOURS_LABEL = "8:00 AM – 4:00 PM";
+const TOUR_SCHEDULE_LABEL = `${TOUR_DAYS_LABEL} · ${TOUR_HOURS_LABEL}`;
 
 async function postToApi(path, payload) {
   const res = await fetch(`/api/${path}`, {
@@ -329,7 +333,7 @@ function AdminPage() {
               ["Parent / guardian", entry.parentName],
               ["Child", entry.childName],
               ["Child age", entry.childAge],
-              ["Saturday", entry.tourDate],
+              ["Tour day", entry.tourDate],
               ["Phone", entry.phone],
               ["Email", entry.email],
               ["Message", entry.message],
@@ -568,12 +572,12 @@ function HomeTourPopup() {
             Book a Tour on Request
           </h2>
           <p id="home-tour-popup-desc" className="homeTourPopup-text">
-            We welcome families to visit our child care center. Tours run by appointment on Saturdays between 10 AM and
-            12 PM — send a request and the office will confirm your time.
+            We welcome families to visit our child care center. Tours run by appointment on {TOUR_DAYS_LABEL} between
+            8 AM and 4 PM — send a request and the office will confirm your time.
           </p>
-          <p className="homeTourPopup-hours" aria-label="Tour hours: Saturdays 10 AM to 12 PM">
+          <p className="homeTourPopup-hours" aria-label={`Tour hours: ${TOUR_SCHEDULE_LABEL}`}>
             <span className="homeTourPopup-hoursLabel">When</span>
-            <span className="homeTourPopup-hoursValue">Saturday · 10:00 AM – 12:00 PM</span>
+            <span className="homeTourPopup-hoursValue">{TOUR_SCHEDULE_LABEL}</span>
           </p>
           <div className="homeTourPopup-actions">
             <a ref={requestRef} href={SCHEDULE_TOUR_HREF} className="ctaPrimary homeTourPopup-cta" onClick={dismiss}>
@@ -1392,27 +1396,29 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-function getNextSaturday(from = new Date()) {
+function getNextTourDay(from = new Date()) {
   const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-  const dow = d.getDay();
-  d.setDate(d.getDate() + (6 - dow + 7) % 7);
+  for (let i = 0; i < 7; i += 1) {
+    if (TOUR_WEEKDAYS.includes(d.getDay())) return d;
+    d.setDate(d.getDate() + 1);
+  }
   return d;
 }
 
-function getTourSaturdayDateBounds() {
-  const min = getNextSaturday();
+function getTourDateBounds() {
+  const min = getNextTourDay();
   const max = new Date(min);
   max.setDate(max.getDate() + 7 * 26);
   return { min: formatDateISO(min), max: formatDateISO(max) };
 }
 
-function isSaturdayDateValue(iso) {
+function isTourDayDateValue(iso) {
   if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return false;
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).getDay() === 6;
+  return TOUR_WEEKDAYS.includes(new Date(y, m - 1, d).getDay());
 }
 
-function formatTourSaturdayLabel(iso) {
+function formatTourDateLabel(iso) {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString("en-US", {
     weekday: "long",
@@ -1420,6 +1426,124 @@ function formatTourSaturdayLabel(iso) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function parseDateISO(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function isTourDayBookable(date, minDate, maxDate) {
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  if (day < minDate || day > maxDate) return false;
+  return TOUR_WEEKDAYS.includes(day.getDay());
+}
+
+function getMonthCalendarDays(year, month) {
+  const first = new Date(year, month, 1);
+  const startPad = first.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startPad; i += 1) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    cells.push(new Date(year, month, day));
+  }
+  return cells;
+}
+
+function TourDateCalendar({ name, value, onChange, min, max, hasError }) {
+  const minDate = parseDateISO(min);
+  const maxDate = parseDateISO(max);
+  const selectedDate = parseDateISO(value);
+  const [viewMonth, setViewMonth] = useState(
+    () => new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1),
+  );
+
+  const monthLabel = viewMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const cells = getMonthCalendarDays(viewMonth.getFullYear(), viewMonth.getMonth());
+  const prevMonthEnd = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 0);
+  const nextMonthStart = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1);
+  const canGoPrev = prevMonthEnd >= minDate;
+  const canGoNext = nextMonthStart <= maxDate;
+
+  return (
+    <div className={`tourCalendar${hasError ? " tourCalendar--error" : ""}`}>
+      <input type="hidden" name={name} value={value} required />
+      <p className="tourCalendar-selected" aria-live="polite">
+        Selected: <strong>{formatTourDateLabel(value)}</strong>
+      </p>
+      <div className="tourCalendar-panel" role="application" aria-label="Choose a tour date">
+        <div className="tourCalendar-header">
+          <button
+            type="button"
+            className="tourCalendar-nav"
+            onClick={() =>
+              setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1))
+            }
+            disabled={!canGoPrev}
+            aria-label="Previous month"
+          >
+            <ChevronLeft size={18} aria-hidden />
+          </button>
+          <span className="tourCalendar-month">{monthLabel}</span>
+          <button
+            type="button"
+            className="tourCalendar-nav"
+            onClick={() =>
+              setViewMonth(new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1))
+            }
+            disabled={!canGoNext}
+            aria-label="Next month"
+          >
+            <ChevronRight size={18} aria-hidden />
+          </button>
+        </div>
+        <div className="tourCalendar-weekdays" aria-hidden>
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <span key={day} className="tourCalendar-weekday">
+              {day}
+            </span>
+          ))}
+        </div>
+        <div className="tourCalendar-grid" role="grid">
+          {cells.map((date, index) => {
+            if (!date) {
+              return <span key={`empty-${index}`} className="tourCalendar-day tourCalendar-day--empty" />;
+            }
+            const iso = formatDateISO(date);
+            const bookable = isTourDayBookable(date, minDate, maxDate);
+            const isSelected = iso === value;
+            const isToday = iso === formatDateISO(new Date());
+
+            if (!bookable) {
+              return (
+                <span
+                  key={iso}
+                  className="tourCalendar-day tourCalendar-day--disabled"
+                  aria-hidden="true"
+                >
+                  {date.getDate()}
+                </span>
+              );
+            }
+
+            return (
+              <button
+                key={iso}
+                type="button"
+                className={`tourCalendar-day tourCalendar-day--bookable${isSelected ? " tourCalendar-day--selected" : ""}${isToday ? " tourCalendar-day--today" : ""}`}
+                onClick={() => onChange(iso)}
+                aria-pressed={isSelected}
+                aria-label={formatTourDateLabel(iso)}
+              >
+                {date.getDate()}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const BLOG_POSTS = [
@@ -1744,8 +1868,8 @@ const ENQUIRY_FAQ = [
       "Tuition varies by program and schedule. Current ranges are on the homepage Tuition section and Admissions page. Call the office for exact pricing for your child's program and schedule.",
   },
   {
-    keywords: ["tour", "visit", "saturday", "book a tour", "schedule a tour", "see the school", "look around"],
-    reply: `We'd love to show you our ${CHILD_CARE_TAGLINE} program. Request a tour online (${SCHEDULE_TOUR_HREF}) — Saturdays, 10:00 AM – 12:00 PM by appointment. We will contact you to confirm your visit.`,
+    keywords: ["tour", "visit", "tuesday", "wednesday", "thursday", "book a tour", "schedule a tour", "see the school", "look around"],
+    reply: `We'd love to show you our ${CHILD_CARE_TAGLINE} program. Request a tour online (${SCHEDULE_TOUR_HREF}) — ${TOUR_SCHEDULE_LABEL} by appointment. We will contact you to confirm your visit.`,
   },
   {
     keywords: ["apply", "application", "admission", "admissions", "enroll", "enrollment", "waitlist", "admission form"],
@@ -2077,7 +2201,8 @@ function EnquiryChat() {
 }
 
 function TourRequestPage() {
-  const saturdayBounds = getTourSaturdayDateBounds();
+  const tourDateBounds = getTourDateBounds();
+  const [tourDate, setTourDate] = useState(tourDateBounds.min);
   const [tourDateError, setTourDateError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
@@ -2091,15 +2216,15 @@ function TourRequestPage() {
     const parentName = String(fd.get("parentName") ?? "").trim();
     const childName = String(fd.get("childName") ?? "").trim();
     const childAge = String(fd.get("childAge") ?? "").trim();
-    const tourDate = String(fd.get("tourDate") ?? "").trim();
+    const tourDateValue = String(fd.get("tourDate") ?? tourDate).trim();
     const phone = String(fd.get("phone") ?? "").trim();
     const email = String(fd.get("email") ?? "").trim();
     const message = String(fd.get("message") ?? "").trim();
 
-    if (!parentName || !childName || !childAge || !tourDate || !phone || !email) return;
+    if (!parentName || !childName || !childAge || !tourDateValue || !phone || !email) return;
     if (!form.reportValidity()) return;
-    if (!isSaturdayDateValue(tourDate)) {
-      setTourDateError("Please choose a Saturday. Tours are held Saturdays, 10:00 AM – 12:00 PM.");
+    if (!isTourDayDateValue(tourDateValue)) {
+      setTourDateError(`Please choose a Tuesday, Wednesday, or Thursday. Tours are held ${TOUR_SCHEDULE_LABEL}.`);
       return;
     }
     const fieldError = validateTourFields({ name: parentName, email, phone });
@@ -2118,7 +2243,7 @@ function TourRequestPage() {
         parentName,
         childName,
         childAge,
-        tourDate,
+        tourDate: tourDateValue,
         phone,
         email,
         message,
@@ -2146,16 +2271,17 @@ function TourRequestPage() {
           </a>
           <p className="tourPage-badge">
             <CalendarDays size={18} strokeWidth={2} aria-hidden />
-            Saturday · 10:00 AM – 12:00 PM
+            {TOUR_SCHEDULE_LABEL}
           </p>
           <p className="aboutPage-eyebrow tourPage-eyebrow">Book a visit</p>
           <h1 className="tourPage-title">Schedule your tour</h1>
           <p className="tourPage-lead">
-            Tell us about your child and choose a Saturday. We&apos;ll email you to confirm your tour time.
+            Tell us about your child and choose a Tuesday, Wednesday, or Thursday. We&apos;ll email you to confirm your
+            tour time.
           </p>
           <ol className="tourPage-steps">
             <li>Fill out the form</li>
-            <li>We confirm your Saturday</li>
+            <li>We confirm your visit day</li>
             <li>Visit us in Plymouth</li>
           </ol>
         </div>
@@ -2203,26 +2329,28 @@ function TourRequestPage() {
                 Visit details
               </h2>
               <div className="admissionForm-grid">
-                <label className="admissionForm-field admissionForm-field--full">
-                  <span className="admissionForm-label">Preferred Saturday</span>
-                  <input
-                    className={`admissionForm-input tourRequestForm-date${tourDateError ? " tourRequestForm-date--error" : ""}`}
-                    type="date"
+                <div className="admissionForm-field admissionForm-field--full">
+                  <span className="admissionForm-label" id="tour-date-label">
+                    Preferred tour day
+                  </span>
+                  <TourDateCalendar
                     name="tourDate"
-                    required
-                    min={saturdayBounds.min}
-                    max={saturdayBounds.max}
-                    step={7}
-                    defaultValue={saturdayBounds.min}
-                    onChange={() => setTourDateError("")}
+                    value={tourDate}
+                    onChange={(nextDate) => {
+                      setTourDate(nextDate);
+                      setTourDateError("");
+                    }}
+                    min={tourDateBounds.min}
+                    max={tourDateBounds.max}
+                    hasError={Boolean(tourDateError)}
                   />
-                  <span className="tourRequestForm-dateHint">Saturdays only · tours run 10:00 AM – 12:00 PM</span>
+                  <span className="tourRequestForm-dateHint">{TOUR_DAYS_LABEL} only · {TOUR_HOURS_LABEL}</span>
                   {tourDateError ? (
                     <span className="tourRequestForm-dateError" role="alert">
                       {tourDateError}
                     </span>
                   ) : null}
-                </label>
+                </div>
                 <label className="admissionForm-field">
                   <span className="admissionForm-label">Phone</span>
                   <input
@@ -2262,7 +2390,7 @@ function TourRequestPage() {
                     name="message"
                     rows={4}
                     maxLength={4000}
-                    placeholder="Questions, second child, or notes for your Saturday visit…"
+                    placeholder="Questions, second child, or notes for your visit…"
                   />
                 </label>
               </div>

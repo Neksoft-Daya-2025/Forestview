@@ -6,6 +6,10 @@ const SCHOOL_ADDRESS = "105 Forestview Ln N, Plymouth, MN 55441";
 const SUBMISSION_CONFIRM_MESSAGE =
   "Thank you! Your submission has been received. A confirmation email has been sent to the email address you provided. We will review and contact you shortly.";
 
+const TOUR_DAYS_LABEL = "Tuesday, Wednesday & Thursday";
+const TOUR_HOURS_LABEL = "8:00 AM – 4:00 PM";
+const TOUR_SCHEDULE_LABEL = `${TOUR_DAYS_LABEL} · ${TOUR_HOURS_LABEL}`;
+
 const COLORS = {
   navy: "#063f25",
   deep: "#064324",
@@ -190,8 +194,8 @@ function buildTourOfficeHtml(entry) {
     section("Tour details", [
       row("Child", entry.childName),
       row("Child age", entry.childAge),
-      row("Preferred Saturday", entry.tourDate),
-      row("Tour window", "Saturday · 10:00 AM – 12:00 PM"),
+      row("Preferred tour day", entry.tourDate),
+      row("Tour window", TOUR_SCHEDULE_LABEL),
     ]),
     entry.message ? messageBlock("Additional note", entry.message) : "",
   ].join("");
@@ -211,8 +215,8 @@ function buildTourConfirmHtml(entry) {
     `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;">${escapeHtml(SUBMISSION_CONFIRM_MESSAGE)}</p>`,
     section("Your tour request", [
       row("Child", entry.childName),
-      row("Preferred Saturday", entry.tourDate),
-      row("Tour hours", "Saturday · 10:00 AM – 12:00 PM"),
+      row("Preferred tour day", entry.tourDate),
+      row("Tour hours", TOUR_SCHEDULE_LABEL),
     ]),
     entry.message ? messageBlock("Your note", entry.message) : "",
   ].join("");
@@ -345,8 +349,8 @@ function buildTourOfficeText(entry) {
     line("Parent / guardian", entry.parentName),
     line("Child", entry.childName),
     line("Child age", entry.childAge),
-    line("Preferred Saturday", entry.tourDate),
-    line("Tour window", "Saturday · 10:00 AM – 12:00 PM"),
+    line("Preferred tour day", entry.tourDate),
+    line("Tour window", TOUR_SCHEDULE_LABEL),
     line("Phone", entry.phone),
     line("Email", entry.email),
     entry.message ? "" : null,
@@ -363,8 +367,8 @@ function buildTourConfirmText(entry) {
     "",
     "Your tour request details:",
     line("Child", entry.childName),
-    line("Preferred Saturday", entry.tourDate),
-    line("Tour hours", "Saturday · 10:00 AM – 12:00 PM"),
+    line("Preferred tour day", entry.tourDate),
+    line("Tour hours", TOUR_SCHEDULE_LABEL),
     "",
     entry.message ? "— Your note —" : null,
     entry.message || null,

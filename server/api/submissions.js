@@ -40,10 +40,12 @@ function appendRecord(filename, record) {
   return entry;
 }
 
-function isSaturday(iso) {
+const TOUR_WEEKDAYS = [2, 3, 4];
+
+function isTourDay(iso) {
   if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return false;
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d).getDay() === 6;
+  return TOUR_WEEKDAYS.includes(new Date(y, m - 1, d).getDay());
 }
 
 function cleanText(value, max = 4000) {
@@ -80,8 +82,8 @@ function saveTour(body) {
   if (!parentName || !childName || !childAge || !tourDate || !phone || !email) {
     throw new Error("Please complete all required tour fields (name, email, and phone are required).");
   }
-  if (!isSaturday(tourDate)) {
-    throw new Error("Tour date must be a Saturday.");
+  if (!isTourDay(tourDate)) {
+    throw new Error("Tour date must be a Tuesday, Wednesday, or Thursday.");
   }
   assertRequiredName(parentName, "parent / guardian name");
   assertValidEmail(email);

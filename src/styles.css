@@ -5402,6 +5402,136 @@ footer#support::before {
   outline-color: #b42318;
 }
 
+.tourCalendar {
+  width: 100%;
+  max-width: 360px;
+}
+
+.tourCalendar--error .tourCalendar-panel {
+  border-color: #b42318;
+}
+
+.tourCalendar-selected {
+  margin: 0 0 10px;
+  font-size: var(--text-body-sm);
+  color: var(--muted);
+}
+
+.tourCalendar-selected strong {
+  color: var(--deep);
+  font-weight: 600;
+}
+
+.tourCalendar-panel {
+  padding: 14px;
+  border: 1px solid rgba(6, 67, 36, 0.14);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(6, 51, 31, 0.06);
+}
+
+.tourCalendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tourCalendar-month {
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--deep);
+}
+
+.tourCalendar-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(6, 67, 36, 0.14);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--deep);
+  cursor: pointer;
+}
+
+.tourCalendar-nav:hover:not(:disabled) {
+  background: rgba(11, 106, 58, 0.08);
+}
+
+.tourCalendar-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tourCalendar-weekdays,
+.tourCalendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.tourCalendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.tourCalendar-weekday {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.tourCalendar-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.tourCalendar-day--empty {
+  visibility: hidden;
+}
+
+.tourCalendar-day--disabled {
+  color: rgba(6, 51, 31, 0.22);
+  background: transparent;
+  cursor: default;
+}
+
+.tourCalendar-day--bookable {
+  background: rgba(11, 106, 58, 0.08);
+  color: var(--deep);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tourCalendar-day--bookable:hover {
+  background: rgba(11, 106, 58, 0.16);
+}
+
+.tourCalendar-day--selected {
+  background: var(--deep);
+  color: #fff;
+}
+
+.tourCalendar-day--selected:hover {
+  background: #052f19;
+}
+
+.tourCalendar-day--today:not(.tourCalendar-day--selected) {
+  box-shadow: inset 0 0 0 2px rgba(11, 106, 58, 0.45);
+}
+
 /* Tour booking page (#/tour) — distinct from contact map layout */
 .tourPage {
   background: #f7faf8;
