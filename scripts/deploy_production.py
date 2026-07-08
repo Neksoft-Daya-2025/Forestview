@@ -91,6 +91,12 @@ def main():
         if local.exists():
             sftp.put(str(local), f"{API_ROOT}/{name}")
 
+    local_env = ROOT / ".env"
+    if local_env.exists():
+        print("Uploading .env for API (SMTP / admin)...")
+        sftp.put(str(local_env), f"{API_ROOT}/.env")
+        run(ssh, f"chmod 600 {API_ROOT}/.env")
+
     print("Uploading server code (submissions data NOT touched)...")
     upload_server_code(sftp, ROOT / "server", f"{API_ROOT}/server")
 
