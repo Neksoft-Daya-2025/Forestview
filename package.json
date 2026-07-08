@@ -2,6 +2,8 @@
   "name": "main-forestview",
   "private": true,
   "scripts": {
+    "postinstall": "node scripts/setup-env.js",
+    "setup": "node scripts/setup-env.js",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "dev:api": "cross-env NODE_ENV=development node server/index.js",
     "dev:client": "vite",
