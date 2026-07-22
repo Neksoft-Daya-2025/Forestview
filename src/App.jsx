@@ -81,8 +81,8 @@ const PROGRAMS_LABEL = "Toddler & Preschool";
 const CHILD_CARE_TAGLINE = "Montessori Child Care in Plymouth";
 const HERO_SUBHEADLINE =
   "Nurturing confident, independent learners through toddler and preschool programs.";
-const SCHEDULE_TOUR_HREF = "#/tour";
-const ADMISSION_FORM_HREF = "#/admission-form";
+const SCHEDULE_TOUR_HREF = "/tour";
+const ADMISSION_FORM_HREF = "/admission-form";
 const TOUR_WEEKDAYS = [2, 3, 4];
 const TOUR_DAYS_LABEL = "Tuesday, Wednesday & Thursday";
 const TOUR_HOURS_LABEL = "8:00 AM – 4:00 PM";
@@ -386,8 +386,8 @@ function AdminPage() {
     </main>
   );
 }
-const ADMISSIONS_PROCESS_HREF = "#/admissions/admissions-process";
-const ADMISSIONS_APPLY_HREF = "#/admissions/admissions-apply";
+const ADMISSIONS_PROCESS_HREF = "/admissions/admissions-process";
+const ADMISSIONS_APPLY_HREF = "/admissions/admissions-apply";
 const ADMISSIONS_SECTION_IDS = ["admissions-process", "admissions-apply"];
 
 const ABOUT_WHY_US = [
@@ -436,7 +436,7 @@ function buildFeatureCards(yearsOperating) {
       image: classroomPhoto,
       area: "whole",
       ctaLabel: "Preschool Rates",
-      ctaHref: "#/admissions",
+      ctaHref: "/admissions",
     },
     {
       icon: Baby,
@@ -444,7 +444,7 @@ function buildFeatureCards(yearsOperating) {
       text: "Children ages 16 to 33 months. In our Toddler program, children build basic skills for a smooth transition to Preschool.",
       area: "faculty",
       ctaLabel: "Toddler Rates",
-      ctaHref: "#/admissions",
+      ctaHref: "/admissions",
     },
     {
       icon: Users,
@@ -490,7 +490,7 @@ const programs = {
       "Consistent guides who know your child",
       "Center Hours Mon to Fri 6:30 AM to 6 PM",
     ],
-    cta: { label: "Inquire about Toddler", href: "#/admissions" },
+    cta: { label: "Inquire about Toddler", href: "/admissions" },
   },
   Preschool: {
     label: "Preschool",
@@ -502,7 +502,7 @@ const programs = {
       "Reading, math, culture, and art",
       "Center Hours Mon to Fri 6:30 AM to 6 PM",
     ],
-    cta: { label: "Inquire about Preschool", href: "#/admissions" },
+    cta: { label: "Inquire about Preschool", href: "/admissions" },
   },
 };
 
@@ -699,8 +699,7 @@ function CookieConsent() {
 
 function getAdmissionsSectionIdFromHash() {
   if (typeof window === "undefined") return null;
-  const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-  const parts = raw.split("/").filter(Boolean);
+  const parts = getLocationRouteParts();
   if (parts[0] === "admissions" && parts[1]) return decodeURIComponent(parts[1]);
   if (parts[0]?.startsWith("admissions-")) return parts[0];
   return null;
@@ -852,7 +851,7 @@ function NavNoticesPopover() {
             </li>
           ))}
         </ul>
-        <a href="#/admissions" className="navNotices-calendarLink" onClick={() => setOpen(false)}>
+        <a href="/admissions" className="navNotices-calendarLink" onClick={() => setOpen(false)}>
           View full calendar
         </a>
       </div>
@@ -953,10 +952,10 @@ function NavContactMenu({ onNavigate }) {
       </button>
       {open ? (
         <div id="nav-contact-menu" className="navContact-menu" role="menu" aria-labelledby="nav-contact-button">
-          <a href="#/contact" role="menuitem" className="navContact-item" onClick={go}>
+          <a href="/contact" role="menuitem" className="navContact-item" onClick={go}>
             Contact us
           </a>
-          <a href="#/careers" role="menuitem" className="navContact-item" onClick={go}>
+          <a href="/careers" role="menuitem" className="navContact-item" onClick={go}>
             Careers
           </a>
           <a href={SCHEDULE_TOUR_HREF} role="menuitem" className="navContact-item navContact-item--accent" onClick={go}>
@@ -1390,7 +1389,7 @@ const RULES_TOC_LINKS = [
 const HOME_SECTION_IDS = ["programs", "highlights", "support", "top"];
 
 function homeSectionHref(sectionId) {
-  if (!sectionId) return "#/";
+  if (!sectionId) return "/";
   return `#${sectionId}`;
 }
 
@@ -1398,14 +1397,26 @@ function redirectLegacyTourHash() {
   if (typeof window === "undefined") return;
   const parts = window.location.hash.replace(/^#\/?/, "").split("?")[0].split("/").filter(Boolean);
   if (parts[0] === "contact" && parts[1] === "tour") {
-    window.location.replace(`${window.location.pathname}${window.location.search}#/tour`);
+    window.location.replace(`/tour${window.location.search}`);
   }
+}
+
+function getLocationRouteParts() {
+  if (typeof window === "undefined") return [];
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  if (pathParts.length) return pathParts.map(decodeURIComponent);
+  if (!window.location.hash.startsWith("#/")) return [];
+  return window.location.hash
+    .replace(/^#\/?/, "")
+    .split("?")[0]
+    .split("/")
+    .filter(Boolean)
+    .map(decodeURIComponent);
 }
 
 function getRouteFromHash() {
   if (typeof window === "undefined") return "home";
-  const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-  const parts = raw.split("/").filter(Boolean);
+  const parts = getLocationRouteParts();
   const segment = parts[0] ?? "";
   if (segment === "about") return "about";
   if (segment === "admissions" || segment.startsWith("admissions-")) return "admissions";
@@ -1427,18 +1438,18 @@ const DEFAULT_DESCRIPTION =
   "Forestview Montessori in Plymouth offers toddler and preschool child care rooted in Montessori principles.";
 const ROUTE_META = {
   home: { title: "Forestview Montessori | Montessori Child Care in Plymouth", description: DEFAULT_DESCRIPTION, path: "/" },
-  about: { title: "About Forestview Montessori | Plymouth Montessori School", description: "Learn about Forestview Montessori, our guides, values, and child-centered Montessori approach in Plymouth.", path: "/#/about" },
-  admissions: { title: "Admissions | Forestview Montessori", description: "Explore Forestview Montessori admissions, tuition information, forms, schedules, and enrollment steps.", path: "/#/admissions" },
-  "admission-form": { title: "Admission Form | Forestview Montessori", description: "Submit a Forestview Montessori admission inquiry for toddler or preschool programs.", path: "/#/admission-form" },
-  rules: { title: "Rules and Regulations | Forestview Montessori", description: "Review Forestview Montessori school policies, family expectations, and program guidelines.", path: "/#/rules" },
-  syllabus: { title: "Syllabus | Forestview Montessori", description: "Review Forestview Montessori toddler and preschool curriculum, learning areas, and Montessori philosophy.", path: "/#/syllabus" },
-  "tour-request": { title: "Book a Tour | Forestview Montessori", description: "Schedule a tour of Forestview Montessori in Plymouth and learn about toddler and preschool openings.", path: "/#/tour" },
-  contact: { title: "Contact Forestview Montessori", description: "Contact Forestview Montessori in Plymouth for admissions, tours, careers, and general questions.", path: "/#/contact" },
-  careers: { title: "Careers | Forestview Montessori", description: "Explore teaching and staff career opportunities at Forestview Montessori.", path: "/#/careers" },
-  blog: { title: "Blog | Forestview Montessori", description: "Read Forestview Montessori news, child development ideas, and school updates.", path: "/#/blog" },
-  "blog-post": { title: "Forestview Montessori Blog", description: "Read a Forestview Montessori article for families and community members.", path: "/#/blog" },
-  admin: { title: "Admin | Forestview Montessori", description: "Forestview Montessori internal submission administration.", path: "/#/admin" },
-  "not-found": { title: "Page Not Found | Forestview Montessori", description: "The Forestview Montessori page you requested could not be found.", path: "/#/404" },
+  about: { title: "About Forestview Montessori | Plymouth Montessori School", description: "Learn about Forestview Montessori, our guides, values, and child-centered Montessori approach in Plymouth.", path: "/about" },
+  admissions: { title: "Admissions | Forestview Montessori", description: "Explore Forestview Montessori admissions, tuition information, forms, schedules, and enrollment steps.", path: "/admissions" },
+  "admission-form": { title: "Admission Form | Forestview Montessori", description: "Submit a Forestview Montessori admission inquiry for toddler or preschool programs.", path: "/admission-form" },
+  rules: { title: "Rules and Regulations | Forestview Montessori", description: "Review Forestview Montessori school policies, family expectations, and program guidelines.", path: "/rules" },
+  syllabus: { title: "Syllabus | Forestview Montessori", description: "Review Forestview Montessori toddler and preschool curriculum, learning areas, and Montessori philosophy.", path: "/syllabus" },
+  "tour-request": { title: "Book a Tour | Forestview Montessori", description: "Schedule a tour of Forestview Montessori in Plymouth and learn about toddler and preschool openings.", path: "/tour" },
+  contact: { title: "Contact Forestview Montessori", description: "Contact Forestview Montessori in Plymouth for admissions, tours, careers, and general questions.", path: "/contact" },
+  careers: { title: "Careers | Forestview Montessori", description: "Explore teaching and staff career opportunities at Forestview Montessori.", path: "/careers" },
+  blog: { title: "Blog | Forestview Montessori", description: "Read Forestview Montessori news, child development ideas, and school updates.", path: "/blog" },
+  "blog-post": { title: "Forestview Montessori Blog", description: "Read a Forestview Montessori article for families and community members.", path: "/blog" },
+  admin: { title: "Admin | Forestview Montessori", description: "Forestview Montessori internal submission administration.", path: "/admin" },
+  "not-found": { title: "Page Not Found | Forestview Montessori", description: "The Forestview Montessori page you requested could not be found.", path: "/404" },
 };
 
 function setMetaTag(selector, attrs) {
@@ -1472,7 +1483,7 @@ function updateRouteMetadata(route) {
 
 function getBlogPostSlugFromHash() {
   if (typeof window === "undefined") return null;
-  const parts = window.location.hash.replace(/^#\/?/, "").split("?")[0].split("/").filter(Boolean);
+  const parts = getLocationRouteParts();
   if (parts[0] !== "blog" || parts.length < 2) return null;
   return decodeURIComponent(parts[1]);
 }
@@ -1845,7 +1856,7 @@ function BlogPage() {
             {BLOG_POSTS.map((post) => (
               <li key={post.slug}>
                 <article className="blogPage-card">
-                  <a href={`#/blog/${post.slug}`} className="blogPage-cardMedia">
+                  <a href={`/blog/${post.slug}`} className="blogPage-cardMedia">
                     <img src={post.listImage} alt={post.listImageAlt} loading="lazy" width={640} height={400} />
                   </a>
                   <div className="blogPage-cardBody">
@@ -1853,10 +1864,10 @@ function BlogPage() {
                       {formatBlogDate(post.date)}
                     </time>
                     <h2 className="blogPage-cardTitle">
-                      <a href={`#/blog/${post.slug}`}>{post.title}</a>
+                      <a href={`/blog/${post.slug}`}>{post.title}</a>
                     </h2>
                     <p className="blogPage-cardExcerpt">{post.excerpt}</p>
-                    <a href={`#/blog/${post.slug}`} className="blogPage-cardRead">
+                    <a href={`/blog/${post.slug}`} className="blogPage-cardRead">
                       Read post
                     </a>
                   </div>
@@ -1886,7 +1897,7 @@ function BlogPostPage() {
             <p className="blogPage-missKicker">Post not found</p>
             <h1 className="blogPage-missTitle">We couldn&apos;t find that article</h1>
             <p className="blogPage-missText">The link may be outdated, or the post may have moved.</p>
-            <a href="#/blog" className="blogPage-backLink">
+            <a href="/blog" className="blogPage-backLink">
               ← Back to blog
             </a>
           </div>
@@ -1903,7 +1914,7 @@ function BlogPostPage() {
       </div>
       <article className="blogPost">
         <div className="aboutPage-inner blogPost-inner">
-          <a href="#/blog" className="blogPost-back">
+          <a href="/blog" className="blogPost-back">
             ← All posts
           </a>
           <header className="blogPost-header">
@@ -2251,7 +2262,7 @@ function EnquiryChat() {
         </button>
       </form>
       <div className="enquiryChat-links">
-        <a href="#/contact" onClick={() => setOpen(false)}>
+        <a href="/contact" onClick={() => setOpen(false)}>
           Contact page
         </a>
         <span aria-hidden className="enquiryChat-linksDot">
@@ -2354,7 +2365,7 @@ function TourRequestPage() {
 
       <header className="tourPage-hero">
         <div className="aboutPage-inner tourPage-heroInner">
-          <a href="#/" className="tourPage-back">
+          <a href="/" className="tourPage-back">
             ← Back to home
           </a>
           <p className="tourPage-badge">
@@ -2485,7 +2496,7 @@ function TourRequestPage() {
             </section>
 
             <p className="tourPage-formNote">
-              Submit sends your request to our office. Questions only? <a href="#/contact">Use Contact us</a> instead.
+              Submit sends your request to our office. Questions only? <a href="/contact">Use Contact us</a> instead.
             </p>
             {submitMessage ? (
               <p className="formFeedback formFeedback--success" role="status">
@@ -2659,7 +2670,7 @@ function ContactPage() {
               </div>
               <p className="contactPage-lead">
                 For application forms and tuition details, see{" "}
-                <a href="#/admissions">Admissions</a> or <a href="#/admission-form">Apply online</a>.
+                <a href="/admissions">Admissions</a> or <a href="/admission-form">Apply online</a>.
               </p>
             </div>
             <div>
@@ -2887,10 +2898,10 @@ function SiteHeader() {
   }, [drawerOpen]);
 
   const NAV_LINKS = [
-    { href: "#/", label: "Home" },
-    { href: "#/about", label: "About Us" },
-    { href: "#/syllabus", label: "Syllabus" },
-    { href: "#/admissions", label: "Admissions" },
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About Us" },
+    { href: "/syllabus", label: "Syllabus" },
+    { href: "/admissions", label: "Admissions" },
   ];
 
   const drawerPortal = createPortal(
@@ -2927,10 +2938,10 @@ function SiteHeader() {
             </a>
           ))}
           <div className="navDrawer-group">
-            <a href="#/contact" className="navDrawer-link" onClick={closeDrawer}>
+            <a href="/contact" className="navDrawer-link" onClick={closeDrawer}>
               Contact
             </a>
-            <a href="#/careers" className="navDrawer-sublink" onClick={closeDrawer}>
+            <a href="/careers" className="navDrawer-sublink" onClick={closeDrawer}>
               Careers
             </a>
             <a href={SCHEDULE_TOUR_HREF} className="navDrawer-sublink" onClick={closeDrawer}>
@@ -2940,7 +2951,7 @@ function SiteHeader() {
         </nav>
 
         <div className="navDrawer-footer">
-          <a href="#/admission-form" className="navDrawer-cta" onClick={closeDrawer}>
+          <a href="/admission-form" className="navDrawer-cta" onClick={closeDrawer}>
             Admissions open
           </a>
         </div>
@@ -2984,7 +2995,7 @@ function SiteHeader() {
           </nav>
 
           <div className="navRight">
-            <a href="#/admission-form" className="navAdmissionCta">
+            <a href="/admission-form" className="navAdmissionCta">
               Admissions open
             </a>
             <div className="navTools">
@@ -3052,11 +3063,11 @@ function SiteFooter() {
         </address>
         <nav className="footerLinks" aria-label="Footer">
           <a href="#top">Home</a>
-          <a href="#/about">About Us</a>
-          <a href="#/syllabus">Syllabus</a>
-          <a href="#/admissions">Admissions</a>
-          <a href="#/contact">Contact</a>
-          <a href="#/careers">Careers</a>
+          <a href="/about">About Us</a>
+          <a href="/syllabus">Syllabus</a>
+          <a href="/admissions">Admissions</a>
+          <a href="/contact">Contact</a>
+          <a href="/careers">Careers</a>
           <a href={SCHEDULE_TOUR_HREF}>Book a Tour</a>
         </nav>
         <div className="footerAbout">
@@ -3081,7 +3092,7 @@ function SiteFooter() {
           </a>
         </div>
         <nav className="legalLinks" aria-label="Legal links">
-          <a href="#/rules">Rules and Regulations</a>
+          <a href="/rules">Rules and Regulations</a>
           <a href="#site-map">Site Map</a>
           <a href="#privacy">Privacy Policy</a>
         </nav>
@@ -3137,7 +3148,7 @@ function AboutPage() {
               <a href="#programs" className="aboutPage-heroCta aboutPage-heroCta--primary">
                 See programs
               </a>
-              <a href="#/admissions" className="aboutPage-heroCta aboutPage-heroCta--secondary">
+              <a href="/admissions" className="aboutPage-heroCta aboutPage-heroCta--secondary">
                 Tuition &amp; admissions
               </a>
             </div>
@@ -3224,7 +3235,7 @@ function AboutPage() {
         <div className="aboutPage-inner aboutPage-ctaInner">
           <h2 id="about-cta-h">Plan a visit</h2>
           <p>See the classrooms and ask questions - we&apos;d love to meet you.</p>
-          <a href="#/admissions" className="aboutPage-ctaBtn">
+          <a href="/admissions" className="aboutPage-ctaBtn">
             Tuition &amp; admissions
           </a>
         </div>
@@ -3245,7 +3256,7 @@ function AboutPage() {
               <img src={signPhoto} alt="" />
               <span>Community highlights</span>
             </a>
-            <a href="#/contact" className="aboutPage-moreCard">
+            <a href="/contact" className="aboutPage-moreCard">
               <img src={heroPhoto} alt="" />
               <span>Contact</span>
             </a>
@@ -3313,8 +3324,7 @@ function SyllabusProgramSection({ program }) {
 function SyllabusPage() {
   useEffect(() => {
     const scrollToSectionFromHash = () => {
-      const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-      const parts = raw.split("/").filter(Boolean);
+      const parts = getLocationRouteParts();
       let sectionId = null;
       if (parts[0] === "syllabus" && parts[1]) {
         sectionId = decodeURIComponent(parts[1]);
@@ -3359,7 +3369,7 @@ function SyllabusPage() {
             <ul className="syllabusPage-tocList">
               {SYLLABUS_TOC.map(({ id, label }) => (
                 <li key={id}>
-                  <a className="syllabusPage-tocLink" href={`#/syllabus/${id}`}>
+                  <a className="syllabusPage-tocLink" href={`/syllabus/${id}`}>
                     {label}
                   </a>
                 </li>
@@ -3492,8 +3502,7 @@ function RulesRegulationsPage() {
 
   useEffect(() => {
     const scrollToSectionFromHash = () => {
-      const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-      const parts = raw.split("/").filter(Boolean);
+      const parts = getLocationRouteParts();
       if (parts[0] !== "rules") return;
       const sub = parts[1];
       if (!sub || !RULES_TOC_LINKS.some((x) => x.sectionId === sub)) return;
@@ -3537,7 +3546,7 @@ function RulesRegulationsPage() {
                 <li key={sectionId}>
                   <a
                     className={`rulesPage-tocLink ${activeSection === sectionId ? "rulesPage-tocLink--active" : ""}`}
-                    href={`#/rules/${sectionId}`}
+                    href={`/rules/${sectionId}`}
                     aria-current={activeSection === sectionId ? "location" : undefined}
                   >
                     {label}
@@ -3731,7 +3740,7 @@ function RulesRegulationsPage() {
                   <a href="mailto:info@forestviewmontessori.org">info@forestviewmontessori.org</a>
                 </p>
               </div>
-              <a href="#/admission-form" className="rulesPage-ctaBtn">
+              <a href="/admission-form" className="rulesPage-ctaBtn">
                 Start application
               </a>
             </div>
@@ -3822,7 +3831,7 @@ function AdmissionFormPage() {
 
       <header className="admissionForm-hero">
         <div className="aboutPage-inner admissionForm-heroInner">
-          <a href="#/admissions" className="admissionForm-back">
+          <a href="/admissions" className="admissionForm-back">
             ← Back to admissions
           </a>
           <p className="aboutPage-eyebrow admissionForm-eyebrow">Apply online</p>
@@ -3832,7 +3841,7 @@ function AdmissionFormPage() {
             our office will follow up with next steps.
           </p>
           <div className="admissionForm-rulesRow">
-            <a href="#/rules" className="admissionForm-rulesBtn">
+            <a href="/rules" className="admissionForm-rulesBtn">
               Rules &amp; regulations
             </a>
             <span className="admissionForm-rulesMention">
@@ -4420,7 +4429,7 @@ function AdmissionsPage() {
                 >
                   Begin by email
                 </a>
-                <a href="#/admissions" className="admissionsApply-btn admissionsApply-btn--secondary">
+                <a href="/admissions" className="admissionsApply-btn admissionsApply-btn--secondary">
                   Tuition &amp; schedule
                 </a>
               </div>
@@ -4438,7 +4447,7 @@ function AdmissionsPage() {
                 <a href={ADMISSION_FORM_HREF} className="admissionsApply-asideApply">
                   Apply now
                 </a>
-                <a href="#/contact" className="admissionsApply-asideCta">
+                <a href="/contact" className="admissionsApply-asideCta">
                   Contact &amp; location
                 </a>
               </div>
@@ -4479,7 +4488,7 @@ function HomeWhyChooseSection() {
           <a href={SCHEDULE_TOUR_HREF} className="ctaPrimary">
             Schedule a tour
           </a>
-          <a href="#/about" className="ctaSecondary">
+          <a href="/about" className="ctaSecondary">
             Learn more about us
           </a>
         </div>
@@ -4712,8 +4721,8 @@ function NotFoundPage() {
         <h1 id="not-found-title">Page not found</h1>
         <p>We could not find that Forestview Montessori page. Use the links below to keep exploring.</p>
         <div className="heroActions">
-          <a className="btn btn--primary" href="#/">Return home</a>
-          <a className="btn btn--ghost" href="#/contact">Contact us</a>
+          <a className="btn btn--primary" href="/">Return home</a>
+          <a className="btn btn--ghost" href="/contact">Contact us</a>
         </div>
       </section>
     </main>

@@ -19,15 +19,40 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": ["School", "LocalBusiness"],
-        "name": "Forestview Montessori",
-        "url": "https://forestviewmontessori.org/",
-        "logo": "https://forestviewmontessori.org/forestviewschoollogo.png",
-        "description": "Forestview Montessori in Plymouth offers toddler and preschool child care rooted in Montessori principles.",
-        "sameAs": [
-          "https://www.facebook.com/profile.php?id=61590173237299",
-          "https://www.instagram.com/forestviewmontessoriplymouth",
-          "https://x.com/ForestviewMont"
+        "@graph": [
+          {
+            "@type": ["School", "LocalBusiness"],
+            "@id": "https://forestviewmontessori.org/#school",
+            "name": "Forestview Montessori",
+            "url": "https://forestviewmontessori.org/",
+            "logo": "https://forestviewmontessori.org/forestviewschoollogo.png",
+            "description": "Forestview Montessori in Plymouth offers toddler and preschool child care rooted in Montessori principles.",
+            "sameAs": [
+              "https://www.facebook.com/profile.php?id=61590173237299",
+              "https://www.instagram.com/forestviewmontessoriplymouth",
+              "https://x.com/ForestviewMont"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://forestviewmontessori.org/#website",
+            "url": "https://forestviewmontessori.org/",
+            "name": "Forestview Montessori",
+            "publisher": { "@id": "https://forestviewmontessori.org/#school" }
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "name": ["About Us", "Admissions", "Syllabus", "Book a Tour", "Contact", "Careers", "Blog"],
+            "url": [
+              "https://forestviewmontessori.org/about",
+              "https://forestviewmontessori.org/admissions",
+              "https://forestviewmontessori.org/syllabus",
+              "https://forestviewmontessori.org/tour",
+              "https://forestviewmontessori.org/contact",
+              "https://forestviewmontessori.org/careers",
+              "https://forestviewmontessori.org/blog"
+            ]
+          }
         ]
       }
     </script>
