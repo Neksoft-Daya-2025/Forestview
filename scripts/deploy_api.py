@@ -64,7 +64,7 @@ def main():
     upload_dir(sftp, ROOT / "server", f"{API_ROOT}/server", skip_dirs={"data"})
 
     cmds = [
-        f"cd {API_ROOT} && npm ci --omit=dev",
+        f"cd {API_ROOT} && npm ci --omit=dev --ignore-scripts",
         f"cd {API_ROOT} && pm2 delete forestview-api 2>/dev/null; pm2 start ecosystem.config.cjs",
         "pm2 save",
         "sleep 2 && curl -s http://127.0.0.1:3010/api/health",

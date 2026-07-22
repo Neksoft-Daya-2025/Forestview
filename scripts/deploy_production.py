@@ -121,7 +121,7 @@ PY"""
 
     cmds = [
         f"chown -R forestviewmontessori:forestviewmontessori {WEB_ROOT}",
-        f"cd {API_ROOT} && npm ci --omit=dev 2>&1",
+        f"cd {API_ROOT} && npm ci --omit=dev --ignore-scripts 2>&1",
         "command -v pm2 >/dev/null || npm install -g pm2 2>&1",
         f"cd {API_ROOT} && pm2 delete forestview-api 2>/dev/null; pm2 start ecosystem.config.cjs 2>&1",
         "pm2 save 2>&1",
