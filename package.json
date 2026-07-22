@@ -8,7 +8,10 @@
     "dev:api": "cross-env NODE_ENV=development node server/index.js",
     "dev:client": "vite",
     "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:api\" \"npm run dev:client\"",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node --test test/*.test.js",
+    "lint": "node scripts/lint-js.mjs",
+    "check": "npm run lint && npm test"
   },
   "dependencies": {
     "compression": "^1.8.1",
@@ -18,7 +21,7 @@
     "gsap": "^3.13.0",
     "lucide-react": "^1.16.0",
     "minimist": "^1.2.8",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^9.0.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },

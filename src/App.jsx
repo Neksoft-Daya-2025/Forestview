@@ -512,6 +512,42 @@ const PROGRAM_CARD_ICONS = {
 };
 
 const COOKIE_CONSENT_STORAGE_KEY = "fvm-cookie-consent-v1";
+const GOOGLE_ADS_TAG_ID = "AW-18247447091";
+const GOOGLE_ADS_SCRIPT_ID = "google-ads-gtag-js";
+
+function ensureGoogleConsentDefaults() {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() {
+    window.dataLayer.push(arguments);
+  };
+  window.gtag("consent", "default", {
+    ad_storage: "denied",
+    analytics_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+}
+
+function loadGoogleAdsAfterConsent() {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  ensureGoogleConsentDefaults();
+  window.gtag("consent", "update", {
+    ad_storage: "granted",
+    analytics_storage: "granted",
+    ad_user_data: "granted",
+    ad_personalization: "granted",
+  });
+  window.gtag("js", new Date());
+  window.gtag("config", GOOGLE_ADS_TAG_ID);
+
+  if (document.getElementById(GOOGLE_ADS_SCRIPT_ID)) return;
+  const script = document.createElement("script");
+  script.id = GOOGLE_ADS_SCRIPT_ID;
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_TAG_ID}`;
+  document.head.appendChild(script);
+}
 
 function HomeTourPopup() {
   const [mounted, setMounted] = useState(false);
@@ -601,8 +637,10 @@ function CookieConsent() {
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
+    ensureGoogleConsentDefaults();
     try {
       if (window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) === "1") {
+        loadGoogleAdsAfterConsent();
         return undefined;
       }
     } catch {
@@ -627,6 +665,7 @@ function CookieConsent() {
     } catch {
       /* ignore */
     }
+    loadGoogleAdsAfterConsent();
     setOpen(false);
     window.setTimeout(() => setMounted(false), 480);
   };
@@ -717,8 +756,8 @@ function SiteChrome() {
 }
 
 /** Replace with your real portal URLs when available. */
-const LOGIN_PAGE_URL = "#login";
-const STAFF_LOGIN_URL = "#staff-login";
+const LOGIN_PAGE_URL = "https://forestview.classmentor360.com/auth/login";
+const STAFF_LOGIN_URL = LOGIN_PAGE_URL;
 
 const SCHOOL_NOTICES = [
   {
@@ -1379,7 +1418,56 @@ function getRouteFromHash() {
   if (segment === "careers") return "careers";
   if (segment === "blog") return parts.length > 1 ? "blog-post" : "blog";
   if (HOME_SECTION_IDS.includes(segment)) return "home";
-  return "home";
+  if (!segment) return "home";
+  return "not-found";
+}
+
+const SITE_ORIGIN = "https://forestviewmontessori.org";
+const DEFAULT_DESCRIPTION =
+  "Forestview Montessori in Plymouth offers toddler and preschool child care rooted in Montessori principles.";
+const ROUTE_META = {
+  home: { title: "Forestview Montessori | Montessori Child Care in Plymouth", description: DEFAULT_DESCRIPTION, path: "/" },
+  about: { title: "About Forestview Montessori | Plymouth Montessori School", description: "Learn about Forestview Montessori, our guides, values, and child-centered Montessori approach in Plymouth.", path: "/#/about" },
+  admissions: { title: "Admissions | Forestview Montessori", description: "Explore Forestview Montessori admissions, tuition information, forms, schedules, and enrollment steps.", path: "/#/admissions" },
+  "admission-form": { title: "Admission Form | Forestview Montessori", description: "Submit a Forestview Montessori admission inquiry for toddler or preschool programs.", path: "/#/admission-form" },
+  rules: { title: "Rules and Regulations | Forestview Montessori", description: "Review Forestview Montessori school policies, family expectations, and program guidelines.", path: "/#/rules" },
+  syllabus: { title: "Syllabus | Forestview Montessori", description: "Review Forestview Montessori toddler and preschool curriculum, learning areas, and Montessori philosophy.", path: "/#/syllabus" },
+  "tour-request": { title: "Book a Tour | Forestview Montessori", description: "Schedule a tour of Forestview Montessori in Plymouth and learn about toddler and preschool openings.", path: "/#/tour" },
+  contact: { title: "Contact Forestview Montessori", description: "Contact Forestview Montessori in Plymouth for admissions, tours, careers, and general questions.", path: "/#/contact" },
+  careers: { title: "Careers | Forestview Montessori", description: "Explore teaching and staff career opportunities at Forestview Montessori.", path: "/#/careers" },
+  blog: { title: "Blog | Forestview Montessori", description: "Read Forestview Montessori news, child development ideas, and school updates.", path: "/#/blog" },
+  "blog-post": { title: "Forestview Montessori Blog", description: "Read a Forestview Montessori article for families and community members.", path: "/#/blog" },
+  admin: { title: "Admin | Forestview Montessori", description: "Forestview Montessori internal submission administration.", path: "/#/admin" },
+  "not-found": { title: "Page Not Found | Forestview Montessori", description: "The Forestview Montessori page you requested could not be found.", path: "/#/404" },
+};
+
+function setMetaTag(selector, attrs) {
+  if (typeof document === "undefined") return;
+  let tag = document.head.querySelector(selector);
+  if (!tag) {
+    tag = document.createElement("meta");
+    document.head.appendChild(tag);
+  }
+  Object.entries(attrs).forEach(([key, value]) => tag.setAttribute(key, value));
+}
+
+function updateRouteMetadata(route) {
+  if (typeof document === "undefined") return;
+  const meta = ROUTE_META[route] || ROUTE_META["not-found"];
+  const canonicalUrl = `${SITE_ORIGIN}${meta.path}`;
+  document.title = meta.title;
+  setMetaTag('meta[name="description"]', { name: "description", content: meta.description });
+  setMetaTag('meta[property="og:title"]', { property: "og:title", content: meta.title });
+  setMetaTag('meta[property="og:description"]', { property: "og:description", content: meta.description });
+  setMetaTag('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
+  setMetaTag('meta[property="og:type"]', { property: "og:type", content: "website" });
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.setAttribute("rel", "canonical");
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute("href", canonicalUrl);
 }
 
 function getBlogPostSlugFromHash() {
@@ -4616,6 +4704,22 @@ function HomePage() {
   );
 }
 
+function NotFoundPage() {
+  return (
+    <main className="page page--notFound" id="main-content">
+      <section className="sectionWrap" aria-labelledby="not-found-title">
+        <p className="eyebrow">404</p>
+        <h1 id="not-found-title">Page not found</h1>
+        <p>We could not find that Forestview Montessori page. Use the links below to keep exploring.</p>
+        <div className="heroActions">
+          <a className="btn btn--primary" href="#/">Return home</a>
+          <a className="btn btn--ghost" href="#/contact">Contact us</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const [route, setRoute] = useState(getRouteFromHash);
 
@@ -4629,6 +4733,10 @@ function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  useEffect(() => {
+    updateRouteMetadata(route);
+  }, [route]);
 
   useEffect(() => {
     if (route === "admissions" && getAdmissionsSectionIdFromHash()) return;
@@ -4742,7 +4850,14 @@ function App() {
     );
   }
 
-  return <HomePage />;
+  if (route === "home") return <HomePage />;
+
+  return (
+    <>
+      <SiteChrome />
+      <NotFoundPage />
+    </>
+  );
 }
 
 export default App;

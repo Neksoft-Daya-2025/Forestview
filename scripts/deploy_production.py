@@ -91,11 +91,13 @@ def main():
         if local.exists():
             sftp.put(str(local), f"{API_ROOT}/{name}")
 
-    local_env = ROOT / ".env"
-    if local_env.exists():
-        print("Uploading .env for API (SMTP / admin)...")
-        sftp.put(str(local_env), f"{API_ROOT}/.env")
-        run(ssh, f"chmod 600 {API_ROOT}/.env")
+    env_status, _ = run(ssh, f"test -f {API_ROOT}/.env && echo present")
+    if env_status != "present":
+        raise RuntimeError(
+            f"{API_ROOT}/.env is missing. Provision production secrets on the server before deploying."
+        )
+    run(ssh, f"chmod 600 {API_ROOT}/.env")
+    print("Using the existing server-managed API environment file.")
 
     print("Uploading server code (submissions data NOT touched)...")
     upload_server_code(sftp, ROOT / "server", f"{API_ROOT}/server")

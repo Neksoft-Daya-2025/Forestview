@@ -1,7 +1,16 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
-import App from "./App.jsx";
+
+const App = lazy(() => import("./App.jsx"));
+
+function AppLoadingFallback() {
+  return (
+    <p style={{ margin: "2rem", fontFamily: "Arial, sans-serif", color: "#064324" }}>
+      Loading Forestview Montessori…
+    </p>
+  );
+}
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -49,7 +58,9 @@ const rootEl = document.getElementById("root");
 if (rootEl) {
   createRoot(rootEl).render(
     <ErrorBoundary>
-      <App />
+      <Suspense fallback={<AppLoadingFallback />}>
+        <App />
+      </Suspense>
     </ErrorBoundary>,
   );
 }

@@ -55,10 +55,12 @@ def main():
     )
     for name in UPLOAD:
         sftp.put(str(ROOT / name), f"{API_ROOT}/{name}")
-    local_env = ROOT / ".env"
-    if local_env.exists():
-        sftp.put(str(local_env), f"{API_ROOT}/.env")
-        run(ssh, f"chmod 600 {API_ROOT}/.env")
+    env_status, _ = run(ssh, f"test -f {API_ROOT}/.env && echo present")
+    if env_status != "present":
+        raise RuntimeError(
+            f"{API_ROOT}/.env is missing. Provision production secrets on the server before deploying."
+        )
+    run(ssh, f"chmod 600 {API_ROOT}/.env")
     upload_dir(sftp, ROOT / "server", f"{API_ROOT}/server", skip_dirs={"data"})
 
     cmds = [

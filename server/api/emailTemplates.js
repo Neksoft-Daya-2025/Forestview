@@ -4,7 +4,10 @@ const SCHOOL_EMAIL = "info@forestviewmontessori.org";
 const SCHOOL_ADDRESS = "105 Forestview Ln N, Plymouth, MN 55441";
 
 const SUBMISSION_CONFIRM_MESSAGE =
-  "Thank you! Your submission has been received. A confirmation email has been sent to the email address you provided. We will review and contact you shortly.";
+  "Thank you! Your submission has been received and saved. Our office will review it and contact you shortly.";
+
+const TOUR_CONFIRM_NOTE =
+  "Your preferred date is a request, not a confirmed appointment. Our office will contact you with an available time.";
 
 const TOUR_DAYS_LABEL = "Tuesday, Wednesday & Thursday";
 const TOUR_HOURS_LABEL = "8:00 AM – 4:00 PM";
@@ -41,6 +44,7 @@ function formatSubmittedAt(iso) {
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "America/Chicago",
       timeZoneName: "short",
     });
   } catch {
@@ -218,6 +222,7 @@ function buildTourConfirmHtml(entry) {
       row("Preferred tour day", entry.tourDate),
       row("Tour hours", TOUR_SCHEDULE_LABEL),
     ]),
+    `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${COLORS.muted};">${escapeHtml(TOUR_CONFIRM_NOTE)}</p>`,
     entry.message ? messageBlock("Your note", entry.message) : "",
   ].join("");
 
@@ -369,6 +374,8 @@ function buildTourConfirmText(entry) {
     line("Child", entry.childName),
     line("Preferred tour day", entry.tourDate),
     line("Tour hours", TOUR_SCHEDULE_LABEL),
+    "",
+    TOUR_CONFIRM_NOTE,
     "",
     entry.message ? "— Your note —" : null,
     entry.message || null,

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /#/admin
+Disallow: /#/admission-form
+
+Sitemap: https://forestviewmontessori.org/sitemap.xml
