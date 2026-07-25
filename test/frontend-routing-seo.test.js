@@ -15,7 +15,7 @@ test("parent and staff login navigation use confirmed ClassMentor URL", () => {
   assert.doesNotMatch(app, /const STAFF_LOGIN_URL = "#staff-login";/);
 });
 
-test("unknown hash routes render the not-found route instead of home", () => {
+test("unknown routes render the not-found route instead of home", () => {
   assert.match(app, /return "not-found";/);
   assert.match(app, /function NotFoundPage\(\)/);
   assert.match(app, /Page not found/);
@@ -44,10 +44,23 @@ test("large App module is lazy-loaded from the entrypoint", () => {
 
 test("robots and sitemap expose public routes and exclude private/form routes", () => {
   assert.match(robots, /Sitemap: https:\/\/forestviewmontessori\.org\/sitemap\.xml/);
-  assert.match(sitemap, /https:\/\/forestviewmontessori\.org\/#\/about/);
-  assert.match(sitemap, /https:\/\/forestviewmontessori\.org\/#\/admissions/);
-  assert.doesNotMatch(sitemap, /#\/admin/);
-  assert.doesNotMatch(sitemap, /#\/admission-form/);
+  assert.match(sitemap, /https:\/\/forestviewmontessori\.org\/about/);
+  assert.match(sitemap, /https:\/\/forestviewmontessori\.org\/admissions/);
+  assert.match(sitemap, /https:\/\/forestviewmontessori\.org\/blog\/welcome-to-our-school-blog/);
+  assert.doesNotMatch(sitemap, /#\//);
+  assert.doesNotMatch(sitemap, /\/admin/);
+  assert.doesNotMatch(sitemap, /\/admission-form/);
+  assert.match(robots, /Disallow: \/admin/);
+  assert.match(robots, /Disallow: \/admission-form/);
+});
+
+test("navigation and metadata use clean crawlable URLs", () => {
+  assert.match(app, /function getLocationRouteParts\(\)/);
+  assert.match(app, /\{ href: "\/about", label: "About Us" \}/);
+  assert.match(app, /path: "\/admissions"/);
+  assert.doesNotMatch(app, /href="#\/about"/);
+  assert.match(html, /"@type": "WebSite"/);
+  assert.match(html, /"@type": "SiteNavigationElement"/);
 });
 
 test("Google Ads tag is consent-aware and uses only the supplied ID", () => {

@@ -116,6 +116,15 @@ elif "127.0.0.1:{API_PORT}/api/" in text:
     print("nginx: /api/ proxy already ok")
 else:
     print("nginx: /api/ block present but unexpected target — fix default.conf manually")
+spa_fallback = "try_files $uri $uri/ /index.html;"
+if "try_files $uri $uri/ /index.php?$args;" in text:
+    text = text.replace("try_files $uri $uri/ /index.php?$args;", spa_fallback, 1)
+    path.write_text(text)
+    print("nginx: enabled SPA fallback for clean routes")
+elif spa_fallback in text:
+    print("nginx: SPA fallback already ok")
+else:
+    print("nginx: unexpected root location — clean routes require manual review")
 PY"""
     run(ssh, patch_cmd)
 
