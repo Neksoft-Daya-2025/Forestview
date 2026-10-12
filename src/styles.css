@@ -8386,3 +8386,31 @@ button.admissionForm-submit {
   line-height: 1.45;
   white-space: pre-wrap;
 }
+
+
+/* Forestview photos on the inner pages and homepage Preschool card. */
+.forestviewPagePhoto {
+  display: block;
+  width: 100%;
+  height: clamp(190px, 22vw, 300px);
+  object-fit: cover;
+  border-radius: 20px;
+  margin: 0 0 28px;
+  box-shadow: 0 8px 24px #06432412;
+}
+.contactPage-aside > .forestviewPagePhoto { height: 300px; }
+.blogPost-header > .forestviewPagePhoto {
+  height: clamp(240px, 38vw, 480px);
+  object-position: center 25%;
+}
+.admissionForm-heroInner > .forestviewPagePhoto { object-position: center 18% !important; }
+.rulesPage-heroInner > .forestviewPagePhoto { object-position: center 25% !important; }
+.area-whole .cardPhoto img { object-position: center 25%; }
+@media (max-width: 600px) {
+  .forestviewPagePhoto {
+    height: 220px;
+    border-radius: 14px;
+    margin-bottom: 22px;
+  }
+  .contactPage-aside > .forestviewPagePhoto { height: 260px; }
+}

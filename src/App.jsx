@@ -29,11 +29,21 @@ import {
 } from "lucide-react";
 import schoolLogo from "./assets/forestviewschoollogo.png";
 import footerLogo from "./assets/forestviewfooterlogo.png";
-import heroPhoto from "./assets/hero-leafbuckle.jpg";
-import classroomPhoto from "./assets/grid-whole.jpg";
-import familyPhoto from "./assets/grid-community.jpg";
-import signPhoto from "./assets/11673.jpg";
-import experienceChild from "./assets/division-ycc.jpg";
+import heroPhoto from "./assets/forestview-home-activity.jpg";
+import preschoolPhoto from "./assets/forestview-preschool-table-activity.jpg";
+import classroomPhoto from "./assets/forestview-classroom.jpg";
+import programPhoto from "./assets/forestview-program-work.jpg";
+import outdoorPhoto from "./assets/forestview-outdoor-play.jpg";
+import entrancePhoto from "./assets/forestview-entrance.jpg";
+import practicalLifePhoto from "./assets/forestview-blog-practical-life.jpg";
+import independentWorkPhoto from "./assets/forestview-blog-independent-work.jpg";
+import paintingPhoto from "./assets/forestview-painting.jpg";
+import careersPhoto from "./assets/forestview-careers-classroom.jpg";
+import tourPhoto from "./assets/forestview-tour-room.jpg";
+import curriculumPhoto from "./assets/forestview-curriculum-globes.jpg";
+import communityPhoto from "./assets/forestview-community.jpg";
+import applicationPhoto from "./assets/forestview-application-play.jpg";
+import admissionsPhoto from "./assets/forestview-admissions-horizontal.jpg";
 import experienceVideo from "./assets/video.mp4";
 import {
   SYLLABUS_ASSESSMENT,
@@ -433,7 +443,7 @@ function buildFeatureCards(yearsOperating) {
       icon: CalendarDays,
       title: "Preschool",
       text: "Children 33 months to 6 years of age enjoy all of the benefits of our carefully prepared Montessori learning environment. Children may work either individually or in small groups, learning from and sharing with one another.",
-      image: classroomPhoto,
+      image: preschoolPhoto,
       area: "whole",
       ctaLabel: "Preschool Rates",
       ctaHref: "/admissions",
@@ -1302,7 +1312,7 @@ function ExperienceProgramsBlock({ extraClass = "", showVideo = true, programLay
           <video
             className="experienceBgVideo"
             src={experienceVideo}
-            poster={experienceChild}
+            poster={paintingPhoto}
             muted
             autoPlay
             loop
@@ -1651,7 +1661,7 @@ const BLOG_POSTS = [
     title: "Welcome to our school blog",
     date: "2026-05-02",
     listImage: classroomPhoto,
-    listImageAlt: "Children working together in a bright Montessori classroom.",
+    listImageAlt: "Forestview Montessori classroom with child-sized tables and learning materials.",
     excerpt:
       "Montessori child care in Plymouth — classroom glimpses, parent tips, and school news.",
     paragraphs: [
@@ -1663,7 +1673,7 @@ const BLOG_POSTS = [
     slug: "practical-life-in-the-toddler-room",
     title: "Practical life in the toddler room",
     date: "2026-04-18",
-    listImage: experienceChild,
+    listImage: practicalLifePhoto,
     listImageAlt: "A young child exploring materials in the toddler environment.",
     excerpt:
       "Pouring, dressing frames, and caring for the environment - why these “simple” jobs matter for toddlers.",
@@ -1677,8 +1687,8 @@ const BLOG_POSTS = [
     slug: "montessori-at-home-consistency-without-pressure",
     title: "Montessori at home: consistency without pressure",
     date: "2026-03-07",
-    listImage: familyPhoto,
-    listImageAlt: "A family relaxing together outdoors on a sunny day.",
+    listImage: independentWorkPhoto,
+    listImageAlt: "A child practicing independent work with Montessori materials.",
     excerpt:
       "A few rhythms - order, respect, and real tasks - go further than themed worksheets or flashcards.",
     paragraphs: [
@@ -1918,6 +1928,7 @@ function BlogPostPage() {
             ← All posts
           </a>
           <header className="blogPost-header">
+            <img className="forestviewPagePhoto" src={post.listImage} alt={post.listImageAlt} decoding="async" />
             <time className="blogPost-date" dateTime={post.date}>
               {formatBlogDate(post.date)}
             </time>
@@ -2365,6 +2376,7 @@ function TourRequestPage() {
 
       <header className="tourPage-hero">
         <div className="aboutPage-inner tourPage-heroInner">
+          <img className="forestviewPagePhoto" src={tourPhoto} alt="Visit the learning spaces at Forestview" decoding="async" style={{ objectPosition: "center 45%" }} />
           <a href="/" className="tourPage-back">
             ← Back to home
           </a>
@@ -2632,6 +2644,7 @@ function ContactPage() {
         <div className="aboutPage-inner contactPage-inner">
           <div className="contactPage-layout">
             <div className="contactPage-aside">
+              <img className="forestviewPagePhoto" src={entrancePhoto} alt="The entrance to Forestview Montessori" decoding="async" style={{ objectPosition: "center 45%" }} />
               <div className="contactPage-card">
                 <h2>Visit</h2>
                 <div className="contactPage-cardRow">
@@ -2790,6 +2803,7 @@ function CareersPage() {
 
       <header className="careersPage-hero">
         <div className="aboutPage-inner careersPage-heroInner">
+          <img className="forestviewPagePhoto" src={careersPhoto} alt="The prepared classroom where our Montessori guides work" decoding="async" style={{ objectPosition: "center 45%" }} />
           <p className="aboutPage-eyebrow careersPage-eyebrow">Join our team</p>
           <h1 className="careersPage-title">Montessori Preschool Teacher / Guide</h1>
           <dl className="careersPage-meta">
@@ -3116,7 +3130,7 @@ function AboutPage() {
         <div className="aboutPage-heroLayout">
           <div className="aboutPage-heroMedia">
             <figure className="aboutPage-heroFigure">
-              <img src={classroomPhoto} alt="Children working in a Montessori classroom" />
+              <img src={classroomPhoto} alt="The prepared Montessori classroom at Forestview" />
               <figcaption className="aboutPage-heroCaption">
                 <span className="aboutPage-heroCaptionMark">Est. {FOUNDED_YEAR}</span>
                 <span>Plymouth, Minnesota</span>
@@ -3249,15 +3263,15 @@ function AboutPage() {
           <p className="aboutPage-moreLead">{PROGRAMS_LABEL} child care, community highlights, and ways to reach us.</p>
           <div className="aboutPage-moreGrid">
             <a href="#programs" className="aboutPage-moreCard">
-              <img src={classroomPhoto} alt="" />
+              <img src={programPhoto} alt="A child exploring Montessori shapes" />
               <span>Programs</span>
             </a>
             <a href="#highlights" className="aboutPage-moreCard">
-              <img src={signPhoto} alt="" />
+              <img src={outdoorPhoto} alt="Outdoor play at Forestview" />
               <span>Community highlights</span>
             </a>
             <a href="/contact" className="aboutPage-moreCard">
-              <img src={heroPhoto} alt="" />
+              <img src={entrancePhoto} alt="" />
               <span>Contact</span>
             </a>
           </div>
@@ -3353,6 +3367,7 @@ function SyllabusPage() {
 
       <header className="syllabusPage-hero">
         <div className="aboutPage-inner syllabusPage-heroInner">
+          <img className="forestviewPagePhoto" src={curriculumPhoto} alt="Montessori geography globes, flags and maps" decoding="async" style={{ objectPosition: "center 45%" }} />
           <p className="aboutPage-eyebrow syllabusPage-eyebrow">Curriculum</p>
           <h1 className="syllabusPage-title">{PROGRAMS_LABEL} syllabus</h1>
           <p className="syllabusPage-lead">
@@ -3528,6 +3543,7 @@ function RulesRegulationsPage() {
 
       <header className="rulesPage-hero">
         <div className="aboutPage-inner rulesPage-heroInner">
+          <img className="forestviewPagePhoto" src={communityPhoto} alt="Children learning together at Forestview" decoding="async" style={{ objectPosition: "center 45%" }} />
           <p className="aboutPage-eyebrow rulesPage-eyebrow">Families</p>
           <h1 className="rulesPage-title">Rules and regulations</h1>
           <p className="rulesPage-lead">
@@ -3831,6 +3847,7 @@ function AdmissionFormPage() {
 
       <header className="admissionForm-hero">
         <div className="aboutPage-inner admissionForm-heroInner">
+          <img className="forestviewPagePhoto" src={applicationPhoto} alt="A child exploring classroom activities" decoding="async" style={{ objectPosition: "center 45%" }} />
           <a href="/admissions" className="admissionForm-back">
             ← Back to admissions
           </a>
@@ -4265,7 +4282,7 @@ function AdmissionsPage() {
 
       <header className="admissionsHero">
         <div className="admissionsHero-media" aria-hidden="true">
-          <img src={classroomPhoto} alt="" />
+          <img src={admissionsPhoto} alt="" style={{ objectFit: "cover", objectPosition: "center 35%" }} />
           <div className="admissionsHero-overlay" />
         </div>
         <div className="admissionsHero-inner">
