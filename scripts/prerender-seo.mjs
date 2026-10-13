@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 const origin = "https://forestviewmontessori.org";
 const routes = [
+  ["gallery", "Gallery | Forestview Montessori", "Explore photos of our Montessori classrooms, learning activities, and school community."],
   ["about", "About Forestview Montessori | Plymouth Montessori School", "Learn about Forestview Montessori, our guides, values, and child-centered Montessori approach in Plymouth."],
   ["admissions", "Admissions | Forestview Montessori", "Explore Forestview Montessori admissions, tuition information, forms, schedules, and enrollment steps."],
   ["rules", "Rules and Regulations | Forestview Montessori", "Review Forestview Montessori school policies, family expectations, and program guidelines."],

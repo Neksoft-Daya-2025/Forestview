@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import galleryPhotos from "./galleryPhotos.json";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Baby,
@@ -1429,6 +1430,7 @@ function getRouteFromHash() {
   const parts = getLocationRouteParts();
   const segment = parts[0] ?? "";
   if (segment === "about") return "about";
+  if (segment === "gallery") return "gallery";
   if (segment === "admissions" || segment.startsWith("admissions-")) return "admissions";
   if (segment === "admission-form") return "admission-form";
   if (segment === "rules") return "rules";
@@ -1456,6 +1458,7 @@ const ROUTE_META = {
   "tour-request": { title: "Book a Tour | Forestview Montessori", description: "Schedule a tour of Forestview Montessori in Plymouth and learn about toddler and preschool openings.", path: "/tour" },
   contact: { title: "Contact Forestview Montessori", description: "Contact Forestview Montessori in Plymouth for admissions, tours, careers, and general questions.", path: "/contact" },
   careers: { title: "Careers | Forestview Montessori", description: "Explore teaching and staff career opportunities at Forestview Montessori.", path: "/careers" },
+  gallery: { title: "Gallery | Forestview Montessori", description: "Explore photos of our Montessori classrooms, learning activities, and school community.", path: "/gallery" },
   blog: { title: "Blog | Forestview Montessori", description: "Read Forestview Montessori news, child development ideas, and school updates.", path: "/blog" },
   "blog-post": { title: "Forestview Montessori Blog", description: "Read a Forestview Montessori article for families and community members.", path: "/blog" },
   admin: { title: "Admin | Forestview Montessori", description: "Forestview Montessori internal submission administration.", path: "/admin" },
@@ -1843,6 +1846,63 @@ function formatBlogDate(isoDate) {
   } catch {
     return isoDate;
   }
+}
+
+function GalleryPage() {
+  const [selected, setSelected] = useState(null);
+  const dialogRef = useRef(null);
+  const photo = selected === null ? null : galleryPhotos[selected];
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (selected !== null && !dialog.open) dialog.showModal();
+    if (selected === null && dialog.open) dialog.close();
+    document.body.classList.toggle("gallery-lightbox-open", selected !== null);
+    return () => document.body.classList.remove("gallery-lightbox-open");
+  }, [selected]);
+
+  const changePhoto = (direction) => setSelected((index) => (index + direction + galleryPhotos.length) % galleryPhotos.length);
+
+  return (
+    <main id="top" className="aboutPage galleryPage">
+      <div className="aboutPage-top"><SiteHeader /></div>
+      <header className="galleryPage-hero">
+        <div className="aboutPage-inner">
+          <p className="aboutPage-eyebrow">Life at Forestview</p>
+          <h1>Our gallery</h1>
+          <p>Little discoveries, purposeful play, and spaces to grow.</p>
+          <span className="galleryPage-count">{galleryPhotos.length} photographs</span>
+        </div>
+      </header>
+      <section className="aboutPage-inner galleryPage-grid" aria-label="School photo gallery">
+        {galleryPhotos.map((image, index) => (
+          <button className="galleryPage-photo" key={image.src} onClick={() => setSelected(index)} aria-label={`Open photo ${index + 1}`}>
+            <img src={image.thumbnail} alt={image.alt} width={image.width} height={image.height} loading={index < 6 ? "eager" : "lazy"} decoding="async" />
+            <span aria-hidden="true">View photo ↗</span>
+          </button>
+        ))}
+      </section>
+      <dialog className="galleryLightbox" ref={dialogRef} aria-label="Gallery photo viewer" onCancel={() => setSelected(null)} onClose={() => setSelected(null)}
+        onClick={(event) => { if (event.target === event.currentTarget) setSelected(null); }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight") { event.preventDefault(); changePhoto(1); }
+          if (event.key === "ArrowLeft") { event.preventDefault(); changePhoto(-1); }
+        }}>
+        {photo && <>
+          <div className="galleryLightbox-toolbar">
+            <span>{selected + 1} / {galleryPhotos.length}</span>
+            <button autoFocus onClick={() => setSelected(null)} aria-label="Close photo viewer">Close ×</button>
+          </div>
+          <div className="galleryLightbox-stage">
+            <button onClick={() => changePhoto(-1)} aria-label="Previous photo">‹</button>
+            <img src={photo.src} alt={photo.alt} />
+            <button onClick={() => changePhoto(1)} aria-label="Next photo">›</button>
+          </div>
+        </>}
+      </dialog>
+      <SiteFooter />
+    </main>
+  );
 }
 
 function BlogPage() {
@@ -2916,6 +2976,7 @@ function SiteHeader() {
     { href: "/about", label: "About Us" },
     { href: "/syllabus", label: "Syllabus" },
     { href: "/admissions", label: "Admissions" },
+    { href: "/gallery", label: "Gallery" },
   ];
 
   const drawerPortal = createPortal(
@@ -3078,6 +3139,7 @@ function SiteFooter() {
         <nav className="footerLinks" aria-label="Footer">
           <a href="#top">Home</a>
           <a href="/about">About Us</a>
+          <a href="/gallery">Gallery</a>
           <a href="/syllabus">Syllabus</a>
           <a href="/admissions">Admissions</a>
           <a href="/contact">Contact</a>
@@ -4772,6 +4834,7 @@ function App() {
       route === "admission-form" ||
       route === "rules" ||
       route === "syllabus" ||
+      route === "gallery" ||
       route === "blog" ||
       route === "blog-post" ||
       route === "contact" ||
@@ -4811,6 +4874,10 @@ function App() {
         <CareersPage />
       </>
     );
+  }
+
+  if (route === "gallery") {
+    return <><SiteChrome /><GalleryPage /></>;
   }
 
   if (route === "blog") {
