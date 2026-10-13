@@ -8448,4 +8448,8 @@ button.admissionForm-submit {
   .galleryLightbox-stage button { padding: 6px 10px; }
 }
 
-@media (min-width: 981px) and (max-width: 1400px) { .siteHeader .navDesktop { gap: 16px; letter-spacing: 2px; } }
+@media (min-width: 1241px) { .siteHeader .navDesktop { gap: 12px; letter-spacing: 1.5px; } }
+@media (min-width: 981px) and (max-width: 1240px) {
+  .siteHeader .navDesktop, .siteHeader .navAdmissionCta { display: none; }
+  .siteHeader .navHamburger { display: flex; }
+}
